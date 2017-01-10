@@ -5,6 +5,17 @@ $username = "root";
 $tablename = "TitoTable";
 $dbname = "TitoDB";
 
+
+// PCF
+$vcap_services = json_decode($_ENV["VCAP_SERVICES" ]);
+if($vcap_services->{'p-mysql'}){ //if "mysql" db service is bound to this application
+	$db = $vcap_services->{'p-mysql'}[0]->credentials;
+	$servername = $db->hostname . ':' . $db->port;
+	$username = $db->username;
+	$password = $db->password;
+	$dbname = $db->name;
+}
+
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 // Check connection

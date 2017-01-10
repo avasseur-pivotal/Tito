@@ -15,6 +15,16 @@ $tablename = "TitoTable";
 $dbname = "TitoDB";
 //*************************************************
 
+// PCF
+$vcap_services = json_decode($_ENV["VCAP_SERVICES" ]);
+if($vcap_services->{'p-mysql'}){ //if "mysql" db service is bound to this application
+	$db = $vcap_services->{'p-mysql'}[0]->credentials;
+	$servername = $db->hostname . ':' . $db->port;
+	$username = $db->username;
+	$password = $db->password;
+	$dbname = $db->name;
+}
+
 // Réception des variables
 $hour_home_departure = $_POST['hour_home_departure'];
 $hour_work_departure = $_POST['hour_work_departure'];
@@ -308,6 +318,10 @@ function writeintodb() {
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
+
+// Create table if not exists - this could be a task done elsewhere
+$conn->query("CREATE TABLE IF NOT EXISTS TitoTable (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, home VARCHAR(50) NOT NULL, work VARCHAR(50) NOT NULL, hour_home_departure VARCHAR(50) NOT NULL, hour_work_departure VARCHAR(50) NOT NULL)");
+echo "** created table as it did not exist";
 
     $sql = "INSERT INTO $tablename (home, work, hour_home_departure, hour_work_departure) VALUES ('$home', '$work', '$hour_home_departure', '$hour_work_departure')";
     if ($conn->query($sql) === TRUE) {

@@ -1,0 +1,6 @@
+applications:
+- name: Tito
+  instances: 2
+  memory: 128M
+  services:
+  - monMySQL
